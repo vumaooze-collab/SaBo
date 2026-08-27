@@ -31,6 +31,7 @@ function displayProducts(items) {
 
   items.forEach(function (product) {
     const productElement = document.createElement("div");
+
     productElement.className = "product";
 
     productElement.innerHTML = `
@@ -44,10 +45,18 @@ function displayProducts(items) {
 
       <div class="product-info">
         <h3>${product.name}</h3>
-        <div class="price">MWK ${Number(product.price).toLocaleString()}</div>
-        <div class="location">${product.location || "Location not specified"}</div>
+        <div class="price">
+          MWK ${Number(product.price).toLocaleString()}
+        </div>
+        <div class="location">
+          ${product.location || "Location not specified"}
+        </div>
       </div>
     `;
+
+    productElement.addEventListener("click", function () {
+      window.location.href = `product.html?id=${product.id}`;
+    });
 
     productsContainer.appendChild(productElement);
   });
