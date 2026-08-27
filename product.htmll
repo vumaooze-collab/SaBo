@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>SaBo — Product Details</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <div class="nav">
+      <div class="logo">SaBo</div>
+      <button onclick="history.back()" class="sell-button">Back</button>
+    </div>
+  </header>
+
+  <main class="product-page">
+
+    <div class="product-details-image">
+      Product Image
+    </div>
+
+    <div class="product-details">
+
+      <h1 id="product-name">Loading...</h1>
+
+      <div id="product-price" class="price"></div>
+
+      <div id="product-location" class="location"></div>
+
+      <hr>
+
+      <h2>Description</h2>
+
+      <p id="product-description">
+        Loading product information...
+      </p>
+
+      <div class="seller-box">
+        <h2>Seller</h2>
+        <p id="seller-name">Loading...</p>
+        <p id="seller-location"></p>
+      </div>
+
+      <button class="contact-button">
+        Contact Seller
+      </button>
+
+    </div>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="product.js"></script>
+
+</body>
+</html>
