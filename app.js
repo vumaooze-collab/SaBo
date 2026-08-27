@@ -12,64 +12,81 @@ const searchInput = document.querySelector(".search");
 let products = [];
 
 async function loadProducts() {
+  productsContainer.innerHTML = "<p>Loading products...</p>";
+
   const { data, error } = await supabaseClient
     .from("products")
     .select("*")
     .order("id", { ascending: false });
 
   if (error) {
-    console.error("Could not load products:", error);
+    console.error(error);
+
+    productsContainer.innerHTML =
+      "<p>Unable to load products. Please refresh the page.</p>";
+
     return;
   }
 
-  products = data;
+  products = data || [];
+
   displayProducts(products);
 }
 
 function displayProducts(items) {
   productsContainer.innerHTML = "";
 
+  if (items.length === 0) {
+    productsContainer.innerHTML = "<p>No products found.</p>";
+    return;
+  }
+
   items.forEach(function (product) {
-    const productElement = document.createElement("div");
+    const card = document.createElement("div");
 
-    productElement.className = "product";
+    card.className = "product";
 
-    productElement.innerHTML = `
+    const image = product.image_url
+      ? `<img src="${product.image_url}" alt="${product.name}">`
+      : `<div class="product-placeholder">No Image</div>`;
+
+    card.innerHTML = `
       <div class="product-image">
-        ${
-          product.image_url
-            ? `<img src="${product.image_url}" alt="${product.name}">`
-            : "Product Image"
-        }
+        ${image}
       </div>
 
       <div class="product-info">
         <h3>${product.name}</h3>
+
         <div class="price">
           MWK ${Number(product.price).toLocaleString()}
         </div>
+
         <div class="location">
           ${product.location || "Location not specified"}
         </div>
       </div>
     `;
 
-    productElement.addEventListener("click", function () {
-      window.location.href = `product.html?id=${product.id}`;
+    card.addEventListener("click", function () {
+      window.location.href = "product.html?id=" + product.id;
     });
 
-    productsContainer.appendChild(productElement);
+    productsContainer.appendChild(card);
   });
 }
 
 searchInput.addEventListener("input", function () {
-  const searchTerm = searchInput.value.toLowerCase();
+  const searchTerm = searchInput.value.toLowerCase().trim();
 
-  const filteredProducts = products.filter(function (product) {
-    return product.name.toLowerCase().includes(searchTerm);
+  const filtered = products.filter(function (product) {
+    return (
+      product.name &&
+      product.name.toLowerCase().includes(searchTerm)
+    );
   });
 
-  displayProducts(filteredProducts);
+  displayProducts(filtered);
 });
 
 loadProducts();
