@@ -1,95 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaBo — Sell & Buy Online</title>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-  <header>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SaBo — Sell & Buy Online</title>  <link rel="stylesheet" href="style.css">
+</head><body>  <header>
     <div class="nav">
-      <div class="logo">SaBo</div>
-      <button class="sell-button">Sell something</button>
-    </div>
-  </header>
+      <div class="logo">SaBo</div>  <button class="sell-button" id="sellButton">
+    Sell something
+  </button>
+</div>
 
-  <section class="hero">
-    <h1>Sell & Buy Online</h1>
-    <p>Discover products from people and businesses around you.</p>
+  </header>  <section class="hero"><h1>Sell & Buy Online</h1>
 
-    <input
-      type="text"
-      class="search"
-      placeholder="Search for products..."
-    >
-  </section>
+<p>
+  Discover products from people and businesses around you.
+</p>
 
-  <main class="container">
+<input
+  type="text"
+  class="search"
+  id="searchInput"
+  placeholder="Search for products..."
+  autocomplete="off"
+>
 
-    <h2>Categories</h2>
+  </section>  <main class="container"><section class="category-section">
 
-    <div class="categories">
-      <div class="category">Phones</div>
-      <div class="category">Cars</div>
-      <div class="category">Electronics</div>
-      <div class="category">Fashion</div>
-      <div class="category">Home</div>
-      <div class="category">Agriculture</div>
-    </div>
+  <h2>Categories</h2>
 
-    <h2>Featured Products</h2>
+  <div class="categories" id="categories">
+    <p>Loading categories...</p>
+  </div>
 
-    <div class="products">
+</section>
 
-      <div class="product">
-        <div class="product-image">
-          Product Image
-        </div>
 
-        <div class="product-info">
-          <h3>Example Phone</h3>
-          <div class="price">MWK 500,000</div>
-          <div class="location">Lilongwe, Malawi</div>
-        </div>
-      </div>
+<section class="products-section">
 
-      <div class="product">
-        <div class="product-image">
-          Product Image
-        </div>
+  <h2 id="productsTitle">
+    Featured Products
+  </h2>
 
-        <div class="product-info">
-          <h3>Toyota Hilux</h3>
-          <div class="price">MWK 30,000,000</div>
-          <div class="location">Mzuzu, Malawi</div>
-        </div>
-      </div>
+  <div class="products" id="products">
+    <p>Loading products...</p>
+  </div>
 
-      <div class="product">
-        <div class="product-image">
-          Product Image
-        </div>
+</section>
 
-        <div class="product-info">
-          <h3>Solar Panel</h3>
-          <div class="price">MWK 250,000</div>
-          <div class="location">Blantyre, Malawi</div>
-        </div>
-      </div>
-
-    </div>
-
-  </main>
-
-  <footer>
+  </main>  <footer>
     <p>© 2026 SaBo — Sell & Buy Online</p>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js"></script>
-</body>
+  </footer>  <!-- Supabase -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <!-- SaBo application -->  <script src="app.js"></script></body>
 </html>
