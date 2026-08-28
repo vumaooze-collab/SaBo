@@ -1,53 +1,71 @@
 <!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SaBo — Sell & Buy Online</title>  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SaBo | Sell & Buy Online</title>  <link rel="stylesheet" href="style.css">
 </head><body>  <header>
-    <div class="nav">
-      <div class="logo">SaBo</div>  <button class="sell-button" id="sellButton">
+    <nav class="nav">  <a href="index.html" class="logo">
+    SaBo
+  </a>
+
+  <button
+    type="button"
+    class="sell-button"
+    id="sellButton"
+  >
     Sell something
   </button>
-</div>
 
-  </header>  <section class="hero"><h1>Sell & Buy Online</h1>
+</nav>
 
-<p>
-  Discover products from people and businesses around you.
-</p>
+  </header>  <main><section class="hero">
 
-<input
-  type="text"
-  class="search"
-  id="searchInput"
-  placeholder="Search for products..."
-  autocomplete="off"
->
+  <h1>Sell & Buy Online</h1>
 
-  </section>  <main class="container"><section class="category-section">
+  <p>
+    Discover products from people and businesses around you.
+  </p>
 
-  <h2>Categories</h2>
-
-  <div class="categories" id="categories">
-    <p>Loading categories...</p>
-  </div>
+  <input
+    id="searchInput"
+    class="search"
+    type="search"
+    placeholder="Search products..."
+    autocomplete="off"
+  >
 
 </section>
 
 
-<section class="products-section">
+<section class="container">
 
-  <h2 id="productsTitle">
-    Featured Products
-  </h2>
-
-  <div class="products" id="products">
-    <p>Loading products...</p>
+  <div class="section-header">
+    <h2>Categories</h2>
   </div>
+
+  <div
+    id="categories"
+    class="categories"
+  ></div>
+
+
+  <div class="section-header">
+    <h2 id="productsTitle">
+      Featured Products
+    </h2>
+  </div>
+
+  <div
+    id="products"
+    class="products"
+  ></div>
 
 </section>
 
   </main>  <footer>
-    <p>© 2026 SaBo — Sell & Buy Online</p>
-  </footer>  <!-- Supabase -->  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=999"></script>
+    <p>
+      © 2026 SaBo — Sell & Buy Online
+    </p>
+  </footer>  <!-- Supabase client -->  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>  <!-- SaBo application -->  <script src="app.js?v=20260828"></script></body>
 </html>
