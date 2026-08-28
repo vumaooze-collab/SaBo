@@ -2,7 +2,7 @@ const SUPABASE_URL =
 "https://pjvczlisouoiwgqppttm.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
+  "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
 
 /* =====================================================
 SUPABASE
