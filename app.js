@@ -5,7 +5,7 @@ SaBo — Supabase Configuration
 ========================================================= */
 
 const SUPABASE_URL =
-"https://pjvczlisouoiwgqppttm.supabase.co";
+  "https://xqmqgmeewnahrdzoiwyu.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
 "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
