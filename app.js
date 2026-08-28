@@ -1,354 +1,84 @@
 const SUPABASE_URL =
-"https://pjvczlisouoiwgqppttm.supabase.co";
+  "https://pjvczlisouoiwgqppttm.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
+  "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
 
 const supabaseClient = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_PUBLISHABLE_KEY
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
 );
 
 const productsContainer =
-document.getElementById("products");
+  document.getElementById("products");
 
 const categoriesContainer =
-document.getElementById("categories");
+  document.getElementById("categories");
 
-const searchInput =
-document.getElementById("searchInput");
+async function testConnection() {
 
-const productsTitle =
-document.getElementById("productsTitle");
+  productsContainer.innerHTML =
+    "<p>Testing Supabase connection...</p>";
 
-const sellButton =
-document.getElementById("sellButton");
-
-let products = [];
-
-// ================================
-// LOAD CATEGORIES
-// ================================
-
-async function loadCategories() {
-
-categoriesContainer.innerHTML =
-"<p>Loading categories...</p>";
-
-const { data, error } =
-await supabaseClient
-.from("categories")
-.select("*")
-.order("name", {
-ascending: true
-});
-
-if (error) {
-
-console.error(
-  "CATEGORY ERROR:",
-  error
-);
-
-categoriesContainer.innerHTML =
-  "<p>Category error. Check console.</p>";
-
-return;
-
-}
-
-categoriesContainer.innerHTML = "";
-
-data.forEach(function(category) {
-
-const button =
-  document.createElement("button");
-
-button.className = "category";
-
-button.textContent =
-  category.name;
+  categoriesContainer.innerHTML =
+    "<p>Testing categories...</p>";
 
 
-button.addEventListener(
-  "click",
-  function() {
-
-    filterProducts(
-      category.id,
-      category.name
-    );
-
-  }
-);
+  // Test products
+  const productsResult =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .limit(5);
 
 
-categoriesContainer.appendChild(
-  button
-);
+  if (productsResult.error) {
 
-});
-
-}
-
-// ================================
-// LOAD PRODUCTS
-// ================================
-
-async function loadProducts() {
-
-productsContainer.innerHTML =
-"<p>Loading products...</p>";
-
-const { data, error } =
-await supabaseClient
-.from("products")
-.select("*")
-.eq("is_available", true)
-.order("created_at", {
-ascending: false
-});
-
-if (error) {
-
-console.error(
-  "PRODUCT ERROR:",
-  error
-);
-
-productsContainer.innerHTML =
-  "<p>Product error. Check console.</p>";
-
-return;
-
-}
-
-products = data || [];
-
-displayProducts(products);
-
-}
-
-// ================================
-// DISPLAY PRODUCTS
-// ================================
-
-function displayProducts(items) {
-
-productsContainer.innerHTML = "";
-
-if (!items.length) {
-
-productsContainer.innerHTML =
-  "<p>No products found.</p>";
-
-return;
-
-}
-
-items.forEach(function(product) {
-
-const card =
-  document.createElement("div");
-
-card.className =
-  "product";
-
-
-const image =
-  product.image_url
-
-    ? `
-      <img
-        src="${product.image_url}"
-        alt="${escapeHTML(product.name)}"
-        loading="lazy"
-      >
-    `
-
-    : `
-      <div class="product-placeholder">
-        No Image
-      </div>
+    productsContainer.innerHTML = `
+      <h3>PRODUCT DATABASE ERROR</h3>
+      <p>${productsResult.error.message}</p>
+      <p>Code: ${productsResult.error.code || "none"}</p>
+      <p>Details: ${productsResult.error.details || "none"}</p>
+      <p>Hint: ${productsResult.error.hint || "none"}</p>
     `;
 
+  } else {
 
-card.innerHTML = `
-
-  <div class="product-image">
-    ${image}
-  </div>
-
-  <div class="product-info">
-
-    <h3>
-      ${escapeHTML(product.name)}
-    </h3>
-
-    <div class="price">
-      ${product.currency || "MWK"}
-      ${Number(product.price).toLocaleString()}
-    </div>
-
-    <div class="location">
-      ${escapeHTML(
-        product.location ||
-        "Location not specified"
-      )}
-    </div>
-
-  </div>
-
-`;
-
-
-card.addEventListener(
-  "click",
-  function() {
-
-    window.location.href =
-      "product.html?id=" +
-      encodeURIComponent(product.id);
+    productsContainer.innerHTML = `
+      <h3>PRODUCT CONNECTION WORKS</h3>
+      <p>Products found: ${productsResult.data.length}</p>
+    `;
 
   }
-);
 
 
-productsContainer.appendChild(card);
+  // Test categories
+  const categoriesResult =
+    await supabaseClient
+      .from("categories")
+      .select("*")
+      .limit(20);
 
-});
 
-}
+  if (categoriesResult.error) {
 
-// ================================
-// CATEGORY FILTER
-// ================================
+    categoriesContainer.innerHTML = `
+      <h3>CATEGORY DATABASE ERROR</h3>
+      <p>${categoriesResult.error.message}</p>
+      <p>Code: ${categoriesResult.error.code || "none"}</p>
+      <p>Details: ${categoriesResult.error.details || "none"}</p>
+      <p>Hint: ${categoriesResult.error.hint || "none"}</p>
+    `;
 
-function filterProducts(
-categoryId,
-categoryName
-) {
+  } else {
 
-productsTitle.textContent =
-categoryName;
-
-const filtered =
-products.filter(
-function(product) {
-
-    return (
-      product.category_id ===
-      categoryId
-    );
+    categoriesContainer.innerHTML = `
+      <h3>CATEGORY CONNECTION WORKS</h3>
+      <p>Categories found: ${categoriesResult.data.length}</p>
+    `;
 
   }
-);
-
-displayProducts(filtered);
 
 }
 
-// ================================
-// SEARCH
-// ================================
-
-searchInput.addEventListener(
-"input",
-function() {
-
-const term =
-  searchInput.value
-    .toLowerCase()
-    .trim();
-
-
-if (!term) {
-
-  productsTitle.textContent =
-    "Featured Products";
-
-  displayProducts(products);
-
-  return;
-}
-
-
-productsTitle.textContent =
-  "Search Results";
-
-
-const filtered =
-  products.filter(
-    function(product) {
-
-      return (
-
-        product.name
-          ?.toLowerCase()
-          .includes(term)
-
-        ||
-
-        product.description
-          ?.toLowerCase()
-          .includes(term)
-
-        ||
-
-        product.location
-          ?.toLowerCase()
-          .includes(term)
-
-      );
-
-    }
-  );
-
-
-displayProducts(filtered);
-
-}
-);
-
-// ================================
-// SELL BUTTON
-// ================================
-
-sellButton.addEventListener(
-"click",
-function() {
-
-window.location.href =
-  "sell.html";
-
-}
-);
-
-// ================================
-// SECURITY
-// ================================
-
-function escapeHTML(value) {
-
-return String(value)
-.replace(/&/g, "&")
-.replace(/</g, "<")
-.replace(/>/g, ">")
-.replace(/"/g, """)
-.replace(/'/g, "'");
-
-}
-
-// ================================
-// START
-// ================================
-
-async function startSaBo() {
-
-await loadCategories();
-
-await loadProducts();
-
-}
-
-startSaBo();
+testConnection();
