@@ -1,71 +1,140 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>SaBo | Sell & Buy Online</title>  <link rel="stylesheet" href="style.css">
-</head><body>  <header>
-    <nav class="nav">  <a href="index.html" class="logo">
-    SaBo
-  </a>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <button
-    type="button"
-    class="sell-button"
-    id="sellButton"
-  >
-    Sell something
-  </button>
-
-</nav>
-
-  </header>  <main><section class="hero">
-
-  <h1>Sell & Buy Online</h1>
-
-  <p>
-    Discover products from people and businesses around you.
-  </p>
-
-  <input
-    id="searchInput"
-    class="search"
-    type="search"
-    placeholder="Search products..."
-    autocomplete="off"
+  <meta
+    name="description"
+    content="SaBo — Buy and sell products online."
   >
 
-</section>
+  <title>SaBo — Sell & Buy Online</title>
 
+  <link rel="stylesheet" href="style.css">
+</head>
 
-<section class="container">
+<body>
 
-  <div class="section-header">
-    <h2>Categories</h2>
-  </div>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Main navigation">
 
-  <div
-    id="categories"
-    class="categories"
-  ></div>
+      <a href="index.html" class="logo" aria-label="SaBo home">
+        SaBo
+      </a>
 
+      <button
+        id="sellButton"
+        class="button button-primary"
+        type="button"
+      >
+        Sell
+      </button>
 
-  <div class="section-header">
-    <h2 id="productsTitle">
-      Featured Products
-    </h2>
-  </div>
+    </nav>
+  </header>
 
-  <div
-    id="products"
-    class="products"
-  ></div>
+  <main>
 
-</section>
+    <section class="hero">
 
-  </main>  <footer>
-    <p>
-      © 2026 SaBo — Sell & Buy Online
-    </p>
-  </footer>  <!-- Supabase client -->  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>  <!-- SaBo application -->  <script src="app.js?v=20260828"></script></body>
+      <div class="container hero-content">
+
+        <span class="eyebrow">Sell & Buy Online</span>
+
+        <h1>Find what you need.<br>Sell what you have.</h1>
+
+        <p>
+          Discover products from people and businesses around you.
+        </p>
+
+        <div class="search-wrapper">
+
+          <label for="searchInput" class="sr-only">
+            Search products
+          </label>
+
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="Search products..."
+            autocomplete="off"
+          >
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="container marketplace">
+
+      <div class="section-heading">
+
+        <div>
+          <span class="section-label">Browse</span>
+          <h2>Categories</h2>
+        </div>
+
+        <button
+          id="allProductsButton"
+          class="text-button"
+          type="button"
+        >
+          View all
+        </button>
+
+      </div>
+
+      <div
+        id="categories"
+        class="categories"
+        aria-label="Product categories"
+      >
+        <div class="loading">Loading categories...</div>
+      </div>
+
+      <div class="section-heading products-heading">
+
+        <div>
+          <span class="section-label">Marketplace</span>
+
+          <h2 id="productsTitle">
+            Featured Products
+          </h2>
+        </div>
+
+        <span
+          id="productCount"
+          class="product-count"
+        >
+          0 products
+        </span>
+
+      </div>
+
+      <div
+        id="products"
+        class="products"
+        aria-live="polite"
+      >
+        <div class="loading">Loading products...</div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <strong>SaBo</strong>
+      <p>Sell & Buy Online</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+
+</body>
 </html>
