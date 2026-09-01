@@ -1,0 +1,266 @@
+"use strict";
+
+/* =========================================================
+   SaBo Registration
+========================================================= */
+
+const SUPABASE_URL =
+  "https://xqmqgmeewnahrdzoiwyu.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const signupForm =
+  document.getElementById(
+    "signupForm"
+  );
+
+const signupButton =
+  document.getElementById(
+    "signupButton"
+  );
+
+const authMessage =
+  document.getElementById(
+    "authMessage"
+  );
+
+/* =========================================================
+   Registration
+========================================================= */
+
+signupForm?.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
+
+    clearMessage();
+
+    const formData =
+      new FormData(
+        signupForm
+      );
+
+    const name =
+      String(
+        formData.get("name") || ""
+      ).trim();
+
+    const email =
+      String(
+        formData.get("email") || ""
+      )
+        .trim()
+        .toLowerCase();
+
+    const password =
+      String(
+        formData.get("password") || ""
+      );
+
+    const confirmPassword =
+      String(
+        formData.get(
+          "confirmPassword"
+        ) || ""
+      );
+
+    /* ---------------------------------------------
+       Validation
+    --------------------------------------------- */
+
+    if (!name) {
+
+      showMessage(
+        "Please enter your name.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (!email) {
+
+      showMessage(
+        "Please enter your email.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (password.length < 8) {
+
+      showMessage(
+        "Password must contain at least 8 characters.",
+        "error"
+      );
+
+      return;
+    }
+
+    if (
+      password !==
+      confirmPassword
+    ) {
+
+      showMessage(
+        "Passwords do not match.",
+        "error"
+      );
+
+      return;
+    }
+
+    setLoading(true);
+
+    /* ---------------------------------------------
+       Create Supabase Auth User
+    --------------------------------------------- */
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signUp({
+
+        email,
+
+        password,
+
+        options: {
+          data: {
+            full_name: name
+          }
+        }
+
+      });
+
+    setLoading(false);
+
+    if (error) {
+
+      console.error(
+        "Signup error:",
+        error
+      );
+
+      showMessage(
+        getSignupErrorMessage(error),
+        "error"
+      );
+
+      return;
+    }
+
+    /*
+     * Depending on Supabase email-confirmation
+     * settings, session may or may not exist here.
+     */
+
+    if (data.session) {
+
+      window.location.href =
+        "account.html";
+
+      return;
+    }
+
+    showMessage(
+      "Account created. Check your email to confirm your account.",
+      "success"
+    );
+
+    signupForm.reset();
+  }
+);
+
+/* =========================================================
+   Loading State
+========================================================= */
+
+function setLoading(
+  loading
+) {
+
+  signupButton.disabled =
+    loading;
+
+  signupButton.textContent =
+    loading
+      ? "Creating..."
+      : "Create Account";
+}
+
+/* =========================================================
+   Messages
+========================================================= */
+
+function showMessage(
+  message,
+  type
+) {
+
+  authMessage.textContent =
+    message;
+
+  authMessage.className =
+    `auth-message show ${type}`;
+}
+
+function clearMessage() {
+
+  authMessage.textContent =
+    "";
+
+  authMessage.className =
+    "auth-message";
+}
+
+/* =========================================================
+   Errors
+========================================================= */
+
+function getSignupErrorMessage(
+  error
+) {
+
+  const message =
+    String(
+      error?.message || ""
+    ).toLowerCase();
+
+  if (
+    message.includes(
+      "user already registered"
+    )
+  ) {
+
+    return "An account with this email already exists.";
+  }
+
+  if (
+    message.includes(
+      "password"
+    )
+  ) {
+
+    return error.message;
+  }
+
+  return (
+    error?.message ||
+    "Unable to create your account."
+  );
+}
