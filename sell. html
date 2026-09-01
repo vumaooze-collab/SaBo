@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Sell a product on SaBo"
+  >
+
+  <title>SaBo — Sell Product</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <style>
+
+    .sell-page {
+      width: min(
+        calc(100% - 28px),
+        760px
+      );
+
+      margin: 45px auto 70px;
+    }
+
+    .form-card {
+      padding: 30px;
+
+      border: 1px solid #eadfca;
+      border-radius: 16px;
+
+      background: white;
+
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.07);
+    }
+
+    .form-header {
+      margin-bottom: 30px;
+    }
+
+    .form-header h1 {
+      margin-bottom: 8px;
+      font-size: 34px;
+    }
+
+    .form-header p {
+      color: #777;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+
+      margin-bottom: 7px;
+
+      font-weight: 800;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border: 1px solid #d8cdb8;
+      border-radius: 9px;
+
+      outline: none;
+
+      background: white;
+
+      color: #222;
+    }
+
+    .form-group textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: #f57c00;
+
+      box-shadow:
+        0 0 0 3px
+        rgba(245, 124, 0, 0.12);
+    }
+
+    .form-grid {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 16px;
+    }
+
+    .required {
+      color: #c62828;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+
+      margin-top: 30px;
+    }
+
+    .submit-button {
+      flex: 1;
+
+      min-height: 50px;
+
+      border-radius: 9px;
+
+      background: #f57c00;
+      color: white;
+
+      font-weight: 900;
+
+      cursor: pointer;
+    }
+
+    .submit-button:hover {
+      background: #df6d00;
+    }
+
+    .submit-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .cancel-button {
+      min-height: 50px;
+
+      padding-inline: 20px;
+
+      border: 1px solid #d8cdb8;
+      border-radius: 9px;
+
+      background: white;
+
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+    .form-message {
+      display: none;
+
+      margin-top: 18px;
+      padding: 13px;
+
+      border-radius: 8px;
+
+      font-weight: 700;
+    }
+
+    .form-message.show {
+      display: block;
+    }
+
+    .form-message.error {
+      background: #ffebee;
+      color: #c62828;
+    }
+
+    .form-message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    @media (max-width: 600px) {
+
+      .form-card {
+        padding: 20px;
+      }
+
+      .form-header h1 {
+        font-size: 28px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header class="site-header">
+
+    <nav class="nav container">
+
+      <a
+        href="index.html"
+        class="logo"
+      >
+        SaBo
+      </a>
+
+      <button
+        id="backButton"
+        class="button button-primary"
+        type="button"
+      >
+        Back
+      </button>
+
+    </nav>
+
+  </header>
+
+  <main class="sell-page">
+
+    <section class="form-card">
+
+      <div class="form-header">
+
+        <span class="section-label">
+          SaBo Marketplace
+        </span>
+
+        <h1>Sell your product</h1>
+
+        <p>
+          Enter your product information below.
+        </p>
+
+      </div>
+
+      <form id="sellForm">
+
+        <div class="form-group">
+
+          <label for="productName">
+            Product name
+            <span class="required">*</span>
+          </label>
+
+          <input
+            id="productName"
+            name="name"
+            type="text"
+            placeholder="e.g. iPhone 16"
+            maxlength="150"
+            required
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="description">
+            Description
+          </label>
+
+          <textarea
+            id="description"
+            name="description"
+            placeholder="Describe your product..."
+            maxlength="5000"
+          ></textarea>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="price">
+              Price (MWK)
+              <span class="required">*</span>
+            </label>
+
+            <input
+              id="price"
+              name="price"
+              type="number"
+              min="0"
+              step="1"
+              placeholder="185000"
+              required
+            >
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="stock">
+              Quantity
+              <span class="required">*</span>
+            </label>
+
+            <input
+              id="stock"
+              name="stock"
+              type="number"
+              min="1"
+              step="1"
+              value="1"
+              required
+            >
+
+          </div>
+
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label for="category">
+              Category
+              <span class="required">*</span>
+            </label>
+
+            <select
+              id="category"
+              name="category_id"
+              required
+            >
+
+              <option value="">
+                Select category
+              </option>
+
+            </select>
+
+          </div>
+
+          <div class="form-group">
+
+            <label for="condition">
+              Condition
+              <span class="required">*</span>
+            </label>
+
+            <select
+              id="condition"
+              name="condition"
+              required
+            >
+
+              <option value="new">
+                New
+              </option>
+
+              <option value="used">
+                Used
+              </option>
+
+              <option value="refurbished">
+                Refurbished
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="location">
+            Location
+          </label>
+
+          <input
+            id="location"
+            name="location"
+            type="text"
+            placeholder="e.g. Lilongwe"
+            maxlength="150"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="imageUrl">
+            Product image URL
+          </label>
+
+          <input
+            id="imageUrl"
+            name="image_url"
+            type="url"
+            placeholder="https://..."
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="sellerName">
+            Your name
+          </label>
+
+          <input
+            id="sellerName"
+            name="seller_name"
+            type="text"
+            placeholder="Your name"
+            maxlength="150"
+          >
+
+        </div>
+
+        <div class="form-group">
+
+          <label for="sellerPhone">
+            Phone number
+          </label>
+
+          <input
+            id="sellerPhone"
+            name="seller_phone"
+            type="tel"
+            placeholder="+265..."
+            maxlength="30"
+          >
+
+        </div>
+
+        <div class="form-actions">
+
+          <button
+            id="cancelButton"
+            class="cancel-button"
+            type="button"
+          >
+            Cancel
+          </button>
+
+          <button
+            id="submitButton"
+            class="submit-button"
+            type="submit"
+          >
+            Publish Product
+          </button>
+
+        </div>
+
+        <div
+          id="formMessage"
+          class="form-message"
+          role="alert"
+        ></div>
+
+      </form>
+
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="sell.js"></script>
+
+</body>
+</html>
