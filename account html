@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>SaBo — My Account</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+  <style>
+
+    .account-page {
+      width: min(
+        calc(100% - 28px),
+        850px
+      );
+
+      margin: 45px auto 70px;
+    }
+
+    .account-card {
+      padding: 30px;
+
+      background: white;
+
+      border: 1px solid #eadfca;
+      border-radius: 16px;
+
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.07);
+    }
+
+    .account-card h1 {
+      margin-bottom: 8px;
+      font-size: 34px;
+    }
+
+    .account-email {
+      margin-bottom: 30px;
+      color: #777;
+    }
+
+    .account-actions {
+      display: grid;
+
+      grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+      gap: 15px;
+    }
+
+    .account-action {
+      min-height: 55px;
+
+      padding: 15px;
+
+      border: 1px solid #eadfca;
+      border-radius: 10px;
+
+      background: white;
+
+      font-weight: 800;
+
+      cursor: pointer;
+    }
+
+    .account-action:hover {
+      background: #fff3c4;
+    }
+
+    .logout-button {
+      margin-top: 25px;
+
+      width: 100%;
+      min-height: 50px;
+
+      border-radius: 9px;
+
+      background: #222;
+      color: white;
+
+      font-weight: 900;
+
+      cursor: pointer;
+    }
+
+    .logout-button:hover {
+      background: #333;
+    }
+
+    @media (max-width: 600px) {
+
+      .account-actions {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<header class="site-header">
+
+  <nav class="nav container">
+
+    <a
+      href="index.html"
+      class="logo"
+    >
+      SaBo
+    </a>
+
+    <button
+      id="logoutButton"
+      class="button button-primary"
+      type="button"
+    >
+      Logout
+    </button>
+
+  </nav>
+
+</header>
+
+<main class="account-page">
+
+  <section class="account-card">
+
+    <span class="section-label">
+      My Account
+    </span>
+
+    <h1 id="accountName">
+      Loading...
+    </h1>
+
+    <p
+      id="accountEmail"
+      class="account-email"
+    >
+      Loading...
+    </p>
+
+    <div class="account-actions">
+
+      <button
+        id="sellButton"
+        class="account-action"
+        type="button"
+      >
+        Sell a Product
+      </button>
+
+      <button
+        id="myProductsButton"
+        class="account-action"
+        type="button"
+      >
+        My Products
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="account.js"></script>
+
+</body>
+</html>
