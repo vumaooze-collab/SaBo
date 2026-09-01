@@ -1,0 +1,235 @@
+"use strict";
+
+/* =========================================================
+   SaBo Authentication
+========================================================= */
+
+const SUPABASE_URL =
+  "https://xqmqgmeewnahrdzoiwyu.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const loginForm =
+  document.getElementById(
+    "loginForm"
+  );
+
+const loginButton =
+  document.getElementById(
+    "loginButton"
+  );
+
+const authMessage =
+  document.getElementById(
+    "authMessage"
+  );
+
+/* =========================================================
+   Check Existing Session
+========================================================= */
+
+async function checkExistingSession() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+  if (session) {
+
+    window.location.href =
+      "account.html";
+  }
+}
+
+/* =========================================================
+   Login
+========================================================= */
+
+loginForm?.addEventListener(
+  "submit",
+  async (event) => {
+
+    event.preventDefault();
+
+    clearMessage();
+
+    const formData =
+      new FormData(
+        loginForm
+      );
+
+    const email =
+      String(
+        formData.get("email") || ""
+      )
+        .trim()
+        .toLowerCase();
+
+    const password =
+      String(
+        formData.get("password") || ""
+      );
+
+    if (!email || !password) {
+
+      showMessage(
+        "Please enter your email and password.",
+        "error"
+      );
+
+      return;
+    }
+
+    setLoading(true);
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    setLoading(false);
+
+    if (error) {
+
+      console.error(
+        "Login error:",
+        error
+      );
+
+      showMessage(
+        getAuthErrorMessage(error),
+        "error"
+      );
+
+      return;
+    }
+
+    if (!data.session) {
+
+      showMessage(
+        "Login succeeded, but no session was created.",
+        "error"
+      );
+
+      return;
+    }
+
+    window.location.href =
+      "account.html";
+  }
+);
+
+/* =========================================================
+   Loading State
+========================================================= */
+
+function setLoading(
+  loading
+) {
+
+  if (!loginButton) {
+    return;
+  }
+
+  loginButton.disabled =
+    loading;
+
+  loginButton.textContent =
+    loading
+      ? "Logging in..."
+      : "Login";
+}
+
+/* =========================================================
+   Messages
+========================================================= */
+
+function showMessage(
+  message,
+  type
+) {
+
+  if (!authMessage) {
+    return;
+  }
+
+  authMessage.textContent =
+    message;
+
+  authMessage.className =
+    `auth-message show ${type}`;
+}
+
+function clearMessage() {
+
+  if (!authMessage) {
+    return;
+  }
+
+  authMessage.textContent =
+    "";
+
+  authMessage.className =
+    "auth-message";
+}
+
+/* =========================================================
+   Auth Error Handling
+========================================================= */
+
+function getAuthErrorMessage(
+  error
+) {
+
+  const message =
+    String(
+      error?.message || ""
+    ).toLowerCase();
+
+  if (
+    message.includes(
+      "invalid login credentials"
+    )
+  ) {
+
+    return "Incorrect email or password.";
+  }
+
+  if (
+    message.includes(
+      "email not confirmed"
+    )
+  ) {
+
+    return "Please confirm your email before logging in.";
+  }
+
+  return (
+    error?.message ||
+    "Unable to log in."
+  );
+}
+
+/* =========================================================
+   Start
+========================================================= */
+
+checkExistingSession();
