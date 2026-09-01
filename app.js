@@ -1,5 +1,9 @@
 "use strict";
 
+/* =========================================================
+   SaBo Marketplace Application
+========================================================= */
+
 const SUPABASE_URL =
   "https://xqmqgmeewnahrdzoiwyu.supabase.co";
 
@@ -12,341 +16,685 @@ const supabaseClient =
     SUPABASE_PUBLISHABLE_KEY
   );
 
-const productsContainer =
-  document.getElementById("products");
+/* =========================================================
+   DOM
+========================================================= */
 
-const categoriesContainer =
-  document.getElementById("categories");
+const elements = {
+  sellButton:
+    document.getElementById("sellButton"),
 
-const searchInput =
-  document.getElementById("searchInput");
+  categories:
+    document.getElementById("categories"),
 
-const productsTitle =
-  document.getElementById("productsTitle");
+  products:
+    document.getElementById("products"),
 
-let products = [];
-let categories = [];
+  productsTitle:
+    document.getElementById("productsTitle"),
 
+  productCount:
+    document.getElementById("productCount"),
 
-/* =========================
-   LOAD EVERYTHING
-========================= */
+  searchInput:
+    document.getElementById("searchInput"),
+
+  allProductsButton:
+    document.getElementById("allProductsButton")
+};
+
+/* =========================================================
+   Application State
+========================================================= */
+
+const state = {
+  products: [],
+  categories: [],
+
+  activeCategoryId: null,
+
+  searchQuery: "",
+
+  loading: {
+    products: false,
+    categories: false
+  }
+};
+
+/* =========================================================
+   Initialization
+========================================================= */
 
 async function initializeSaBo() {
 
-  await loadCategories();
+  bindEvents();
 
-  await loadProducts();
+  await Promise.all([
+    loadCategories(),
+    loadProducts()
+  ]);
 
 }
 
+/* =========================================================
+   Event Binding
+========================================================= */
 
-/* =========================
-   CATEGORIES
-========================= */
+function bindEvents() {
+
+  elements.sellButton?.addEventListener(
+    "click",
+    () => {
+      window.location.href = "sell.html";
+    }
+  );
+
+  elements.allProductsButton?.addEventListener(
+    "click",
+    showAllProducts
+  );
+
+  elements.searchInput?.addEventListener(
+    "input",
+    handleSearch
+  );
+
+}
+
+/* =========================================================
+   Categories
+========================================================= */
 
 async function loadCategories() {
 
-  const result =
-    await supabaseClient
-      .from("categories")
-      .select("id,name,slug,image_url")
-      .order("name");
+  state.loading.categories = true;
 
-  if (result.error) {
+  renderCategoryLoading();
 
-    categoriesContainer.innerHTML =
-      `<p>${result.error.message}</p>`;
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("categories")
+    .select(
+      "id,name,slug,image_url,created_at"
+    )
+    .order("name", {
+      ascending: true
+    });
 
-    console.error(result.error);
+  state.loading.categories = false;
+
+  if (error) {
+
+    console.error(
+      "Category loading error:",
+      error
+    );
+
+    renderError(
+      elements.categories,
+      "Unable to load categories."
+    );
 
     return;
   }
 
-  categories =
-    result.data || [];
+  state.categories = data || [];
 
   renderCategories();
-
 }
 
+/* =========================================================
+   Category Rendering
+========================================================= */
 
 function renderCategories() {
 
-  categoriesContainer.innerHTML = "";
+  elements.categories.innerHTML = "";
 
-  categories.forEach(function(category) {
+  if (!state.categories.length) {
 
-    const button =
-      document.createElement("button");
+    elements.categories.innerHTML = `
+      <div class="empty-state">
+        <h3>No categories yet</h3>
+        <p>Categories will appear here when available.</p>
+      </div>
+    `;
 
-    button.className =
-      "category";
+    return;
+  }
 
-    button.type =
-      "button";
+  state.categories.forEach(
+    (category) => {
 
-    button.textContent =
-      category.name;
+      const button =
+        document.createElement("button");
 
-    button.addEventListener(
-      "click",
-      function() {
+      button.type = "button";
 
-        productsTitle.textContent =
-          category.name;
+      button.className = "category";
 
-        const filtered =
-          products.filter(function(product) {
+      button.textContent =
+        category.name;
 
-            return (
-              product.category_id ===
-              category.id
-            );
+      button.dataset.categoryId =
+        category.id;
 
-          });
-
-        renderProducts(filtered);
-
+      if (
+        state.activeCategoryId ===
+        category.id
+      ) {
+        button.classList.add("active");
       }
-    );
 
-    categoriesContainer.appendChild(
-      button
-    );
+      button.addEventListener(
+        "click",
+        () => {
+          selectCategory(category.id);
+        }
+      );
 
-  });
-
+      elements.categories.appendChild(
+        button
+      );
+    }
+  );
 }
 
+/* =========================================================
+   Category Selection
+========================================================= */
 
-/* =========================
-   PRODUCTS
-========================= */
+function selectCategory(categoryId) {
+
+  state.activeCategoryId =
+    categoryId;
+
+  const category =
+    state.categories.find(
+      (item) =>
+        item.id === categoryId
+    );
+
+  elements.productsTitle.textContent =
+    category?.name || "Products";
+
+  renderCategories();
+
+  renderFilteredProducts();
+}
+
+/* =========================================================
+   Show All
+========================================================= */
+
+function showAllProducts() {
+
+  state.activeCategoryId = null;
+
+  state.searchQuery = "";
+
+  if (elements.searchInput) {
+    elements.searchInput.value = "";
+  }
+
+  elements.productsTitle.textContent =
+    "Featured Products";
+
+  renderCategories();
+
+  renderProducts(state.products);
+}
+
+/* =========================================================
+   Products
+========================================================= */
 
 async function loadProducts() {
 
-  const result =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
+  state.loading.products = true;
 
-  if (result.error) {
+  renderProductLoading();
 
-    productsContainer.innerHTML =
-      `<p>${result.error.message}</p>`;
+  const {
+    data,
+    error
+  } = await supabaseClient
+    .from("products")
+    .select(`
+      id,
+      name,
+      description,
+      price,
+      currency,
+      category_id,
+      image_url,
+      location,
+      seller_name,
+      seller_phone,
+      condition,
+      stock,
+      is_available,
+      is_featured,
+      created_at,
+      updated_at
+    `)
+    .eq("is_available", true)
+    .order("created_at", {
+      ascending: false
+    });
 
-    console.error(result.error);
+  state.loading.products = false;
+
+  if (error) {
+
+    console.error(
+      "Product loading error:",
+      error
+    );
+
+    renderError(
+      elements.products,
+      "Unable to load products."
+    );
 
     return;
   }
 
-  products =
-    result.data || [];
+  state.products = data || [];
 
-  renderProducts(products);
-
+  renderProducts(state.products);
 }
 
+/* =========================================================
+   Product Filtering
+========================================================= */
 
-/* =========================
-   RENDER PRODUCTS
-========================= */
+function getFilteredProducts() {
+
+  let results =
+    [...state.products];
+
+  if (state.activeCategoryId) {
+
+    results =
+      results.filter(
+        (product) =>
+          product.category_id ===
+          state.activeCategoryId
+      );
+  }
+
+  if (state.searchQuery) {
+
+    const query =
+      state.searchQuery
+        .toLowerCase();
+
+    results =
+      results.filter(
+        (product) => {
+
+          const searchableText =
+            [
+              product.name,
+              product.description,
+              product.location,
+              product.seller_name,
+              product.condition
+            ]
+              .filter(Boolean)
+              .join(" ")
+              .toLowerCase();
+
+          return searchableText.includes(
+            query
+          );
+        }
+      );
+  }
+
+  return results;
+}
+
+/* =========================================================
+   Render Filtered Products
+========================================================= */
+
+function renderFilteredProducts() {
+
+  const results =
+    getFilteredProducts();
+
+  renderProducts(results);
+}
+
+/* =========================================================
+   Product Rendering
+========================================================= */
 
 function renderProducts(items) {
 
-  productsContainer.innerHTML = "";
+  elements.products.innerHTML = "";
+
+  updateProductCount(items.length);
 
   if (!items.length) {
 
-    productsContainer.innerHTML =
-      "<p>No products found.</p>";
+    elements.products.innerHTML = `
+      <div class="empty-state">
+        <h3>No products found</h3>
+        <p>
+          Try another search or choose a different category.
+        </p>
+      </div>
+    `;
 
     return;
   }
 
+  const fragment =
+    document.createDocumentFragment();
 
-  items.forEach(function(product) {
+  items.forEach(
+    (product) => {
 
-    const card =
-      document.createElement("article");
+      const card =
+        createProductCard(product);
 
-    card.className =
-      "product";
-
-
-    const imageBox =
-      document.createElement("div");
-
-    imageBox.className =
-      "product-image";
-
-
-    if (product.image_url) {
-
-      const image =
-        document.createElement("img");
-
-      image.src =
-        product.image_url;
-
-      image.alt =
-        product.name;
-
-      image.loading =
-        "lazy";
-
-      imageBox.appendChild(
-        image
-      );
-
-    } else {
-
-      imageBox.innerHTML =
-        `<div class="product-placeholder">
-          No Image
-        </div>`;
-
+      fragment.appendChild(card);
     }
+  );
 
+  elements.products.appendChild(
+    fragment
+  );
+}
 
-    const info =
-      document.createElement("div");
+/* =========================================================
+   Product Card
+========================================================= */
 
-    info.className =
-      "product-info";
+function createProductCard(product) {
 
+  const card =
+    document.createElement("article");
 
-    const name =
-      document.createElement("h3");
+  card.className = "product";
 
-    name.textContent =
-      product.name;
+  card.tabIndex = 0;
 
+  card.setAttribute(
+    "role",
+    "button"
+  );
 
-    const price =
-      document.createElement("div");
+  card.setAttribute(
+    "aria-label",
+    `View ${product.name}`
+  );
 
-    price.className =
-      "price";
+  /* Image */
 
-    price.textContent =
-      `${product.currency || "MWK"} ${
-        Number(product.price).toLocaleString()
-      }`;
+  const imageBox =
+    document.createElement("div");
 
+  imageBox.className =
+    "product-image";
 
-    const location =
-      document.createElement("div");
+  if (product.image_url) {
 
-    location.className =
-      "location";
+    const image =
+      document.createElement("img");
 
-    location.textContent =
-      product.location ||
-      "Location not specified";
+    image.src =
+      product.image_url;
 
+    image.alt =
+      product.name || "Product image";
 
-    info.appendChild(name);
+    image.loading = "lazy";
 
-    info.appendChild(price);
+    image.addEventListener(
+      "error",
+      () => {
+        image.remove();
 
-    info.appendChild(location);
-
-
-    card.appendChild(imageBox);
-
-    card.appendChild(info);
-
-
-    card.addEventListener(
-      "click",
-      function() {
-
-        window.location.href =
-          `product.html?id=${encodeURIComponent(
-            product.id
-          )}`;
-
+        imageBox.innerHTML = `
+          <div class="product-placeholder">
+            No Image
+          </div>
+        `;
       }
     );
 
+    imageBox.appendChild(image);
 
-    productsContainer.appendChild(
-      card
+  } else {
+
+    imageBox.innerHTML = `
+      <div class="product-placeholder">
+        No Image
+      </div>
+    `;
+  }
+
+  /* Information */
+
+  const info =
+    document.createElement("div");
+
+  info.className =
+    "product-info";
+
+  const name =
+    document.createElement("h3");
+
+  name.textContent =
+    product.name;
+
+  const price =
+    document.createElement("div");
+
+  price.className =
+    "price";
+
+  price.textContent =
+    formatPrice(
+      product.price,
+      product.currency
     );
 
-  });
+  const location =
+    document.createElement("div");
 
+  location.className =
+    "location";
+
+  location.textContent =
+    product.location ||
+    "Location not specified";
+
+  info.appendChild(name);
+  info.appendChild(price);
+  info.appendChild(location);
+
+  if (product.condition) {
+
+    const condition =
+      document.createElement("span");
+
+    condition.className =
+      "condition";
+
+    condition.textContent =
+      product.condition;
+
+    info.appendChild(condition);
+  }
+
+  card.appendChild(imageBox);
+  card.appendChild(info);
+
+  /* Reactive navigation */
+
+  const openProduct = () => {
+
+    window.location.href =
+      `product.html?id=${encodeURIComponent(
+        product.id
+      )}`;
+  };
+
+  card.addEventListener(
+    "click",
+    openProduct
+  );
+
+  card.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+
+        event.preventDefault();
+
+        openProduct();
+      }
+    }
+  );
+
+  return card;
 }
 
+/* =========================================================
+   Search
+========================================================= */
 
-/* =========================
-   SEARCH
-========================= */
+function handleSearch(event) {
 
-searchInput.addEventListener(
-  "input",
-  function() {
+  state.searchQuery =
+    event.target.value.trim();
 
-    const query =
-      searchInput.value
-        .trim()
-        .toLowerCase();
+  if (state.searchQuery) {
 
-
-    if (!query) {
-
-      productsTitle.textContent =
-        "Featured Products";
-
-      renderProducts(products);
-
-      return;
-    }
-
-
-    productsTitle.textContent =
+    elements.productsTitle.textContent =
       "Search Results";
 
+  } else if (
+    state.activeCategoryId
+  ) {
 
-    const results =
-      products.filter(function(product) {
+    const category =
+      state.categories.find(
+        (item) =>
+          item.id ===
+          state.activeCategoryId
+      );
 
-        return (
+    elements.productsTitle.textContent =
+      category?.name || "Products";
 
-          String(product.name || "")
-            .toLowerCase()
-            .includes(query)
+  } else {
 
-          ||
-
-          String(product.description || "")
-            .toLowerCase()
-            .includes(query)
-
-          ||
-
-          String(product.location || "")
-            .toLowerCase()
-            .includes(query)
-
-        );
-
-      });
-
-
-    renderProducts(results);
-
+    elements.productsTitle.textContent =
+      "Featured Products";
   }
-);
 
+  renderFilteredProducts();
+}
 
-/* =========================
-   START
-========================= */
+/* =========================================================
+   Formatting
+========================================================= */
+
+function formatPrice(
+  price,
+  currency = "MWK"
+) {
+
+  const numericPrice =
+    Number(price);
+
+  if (!Number.isFinite(numericPrice)) {
+    return `${currency} 0`;
+  }
+
+  return `${currency} ${numericPrice.toLocaleString()}`;
+}
+
+/* =========================================================
+   Product Count
+========================================================= */
+
+function updateProductCount(count) {
+
+  elements.productCount.textContent =
+    `${count} ${
+      count === 1
+        ? "product"
+        : "products"
+    }`;
+}
+
+/* =========================================================
+   Loading States
+========================================================= */
+
+function renderCategoryLoading() {
+
+  elements.categories.innerHTML = `
+    <div class="loading">
+      Loading categories...
+    </div>
+  `;
+}
+
+function renderProductLoading() {
+
+  elements.products.innerHTML = `
+    <div class="loading">
+      Loading products...
+    </div>
+  `;
+}
+
+/* =========================================================
+   Error Handling
+========================================================= */
+
+function renderError(
+  container,
+  message
+) {
+
+  container.innerHTML = `
+    <div class="error-message">
+      ${escapeHtml(message)}
+    </div>
+  `;
+}
+
+/* =========================================================
+   HTML Escaping
+========================================================= */
+
+function escapeHtml(value) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/* =========================================================
+   Start Application
+========================================================= */
 
 initializeSaBo();
