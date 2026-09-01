@@ -2,55 +2,269 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-  <title>SaBo — Product Details</title>
+  <meta
+    name="description"
+    content="SaBo product details"
+  >
+
+  <title>SaBo — Product</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    .product-page {
+      width: min(
+        calc(100% - 40px),
+        1100px
+      );
+
+      margin: 45px auto 70px;
+
+      display: grid;
+
+      grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+      gap: 40px;
+    }
+
+    .product-details-image {
+      min-height: 420px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+
+      border-radius: 16px;
+
+      background: #ffe082;
+    }
+
+    .product-details-image img {
+      width: 100%;
+      height: 100%;
+      min-height: 420px;
+
+      object-fit: cover;
+    }
+
+    .product-details {
+      padding: 10px 0;
+    }
+
+    .product-details h1 {
+      margin-bottom: 14px;
+
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.1;
+    }
+
+    .product-details .price {
+      font-size: 25px;
+    }
+
+    .detail-location {
+      margin-bottom: 25px;
+      color: #777;
+    }
+
+    .detail-section {
+      margin-top: 25px;
+      padding-top: 25px;
+
+      border-top: 1px solid #eadfca;
+    }
+
+    .detail-section h2 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .description {
+      color: #555;
+      white-space: pre-wrap;
+    }
+
+    .seller-box {
+      margin-top: 25px;
+      padding: 20px;
+
+      border: 1px solid #eadfca;
+      border-radius: 12px;
+
+      background: white;
+    }
+
+    .seller-box h2 {
+      margin-bottom: 12px;
+    }
+
+    .seller-box p {
+      margin-bottom: 5px;
+    }
+
+    .contact-button {
+      width: 100%;
+
+      margin-top: 20px;
+      min-height: 50px;
+
+      border-radius: 10px;
+
+      background: #f57c00;
+      color: white;
+
+      font-weight: 900;
+
+      cursor: pointer;
+    }
+
+    .contact-button:hover {
+      background: #df6d00;
+    }
+
+    .back-button {
+      margin: 20px;
+    }
+
+    @media (max-width: 750px) {
+
+      .product-page {
+        width: min(
+          calc(100% - 28px),
+          1100px
+        );
+
+        grid-template-columns: 1fr;
+
+        gap: 25px;
+      }
+
+      .product-details-image {
+        min-height: 300px;
+      }
+
+      .product-details-image img {
+        min-height: 300px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="nav">
-      <div class="logo">SaBo</div>
-      <button onclick="history.back()" class="sell-button">Back</button>
-    </div>
+  <header class="site-header">
+
+    <nav class="nav container">
+
+      <a
+        href="index.html"
+        class="logo"
+      >
+        SaBo
+      </a>
+
+      <button
+        id="backButton"
+        class="button button-primary"
+        type="button"
+      >
+        Back
+      </button>
+
+    </nav>
+
   </header>
 
   <main class="product-page">
 
-    <div class="product-details-image">
-      Product Image
+    <div
+      id="productImage"
+      class="product-details-image"
+    >
+      <div class="loading">
+        Loading image...
+      </div>
     </div>
 
-    <div class="product-details">
+    <article class="product-details">
 
-      <h1 id="product-name">Loading...</h1>
+      <h1 id="productName">
+        Loading...
+      </h1>
 
-      <div id="product-price" class="price"></div>
-
-      <div id="product-location" class="location"></div>
-
-      <hr>
-
-      <h2>Description</h2>
-
-      <p id="product-description">
-        Loading product information...
-      </p>
-
-      <div class="seller-box">
-        <h2>Seller</h2>
-        <p id="seller-name">Loading...</p>
-        <p id="seller-location"></p>
+      <div
+        id="productPrice"
+        class="price"
+      >
+        Loading...
       </div>
 
-      <button class="contact-button">
+      <div
+        id="productLocation"
+        class="detail-location"
+      >
+        Loading...
+      </div>
+
+      <div class="detail-section">
+
+        <h2>Description</h2>
+
+        <p
+          id="productDescription"
+          class="description"
+        >
+          Loading...
+        </p>
+
+      </div>
+
+      <div class="detail-section">
+
+        <h2>Product Information</h2>
+
+        <p id="productCondition">
+          Condition: Loading...
+        </p>
+
+        <p id="productStock">
+          Stock: Loading...
+        </p>
+
+      </div>
+
+      <div class="seller-box">
+
+        <h2>Seller</h2>
+
+        <p id="sellerName">
+          Loading...
+        </p>
+
+        <p id="sellerLocation">
+          Loading...
+        </p>
+
+      </div>
+
+      <button
+        id="contactButton"
+        class="contact-button"
+        type="button"
+      >
         Contact Seller
       </button>
 
-    </div>
+    </article>
 
   </main>
 
