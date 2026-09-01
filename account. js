@@ -1,0 +1,189 @@
+"use strict";
+
+/* =========================================================
+   SaBo Account
+========================================================= */
+
+const SUPABASE_URL =
+  "https://xqmqgmeewnahrdzoiwyu.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_HB8q-p6LCcM9fq6FgNlVgg_8zXEV3cI";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const accountName =
+  document.getElementById(
+    "accountName"
+  );
+
+const accountEmail =
+  document.getElementById(
+    "accountEmail"
+  );
+
+const logoutButton =
+  document.getElementById(
+    "logoutButton"
+  );
+
+const sellButton =
+  document.getElementById(
+    "sellButton"
+  );
+
+const myProductsButton =
+  document.getElementById(
+    "myProductsButton"
+  );
+
+/* =========================================================
+   Initialize
+========================================================= */
+
+async function initializeAccount() {
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await supabaseClient.auth.getSession();
+
+  if (!session) {
+
+    window.location.href =
+      "login.html";
+
+    return;
+  }
+
+  const user =
+    session.user;
+
+  renderUser(user);
+}
+
+/* =========================================================
+   Render User
+========================================================= */
+
+function renderUser(user) {
+
+  const metadata =
+    user.user_metadata || {};
+
+  const name =
+    metadata.full_name ||
+    "SaBo User";
+
+  accountName.textContent =
+    `Welcome, ${name}`;
+
+  accountEmail.textContent =
+    user.email ||
+    "";
+}
+
+/* =========================================================
+   Logout
+========================================================= */
+
+logoutButton?.addEventListener(
+  "click",
+  async () => {
+
+    logoutButton.disabled =
+      true;
+
+    logoutButton.textContent =
+      "Logging out...";
+
+    const {
+      error
+    } =
+      await supabaseClient.auth.signOut();
+
+    if (error) {
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+      logoutButton.disabled =
+        false;
+
+      logoutButton.textContent =
+        "Logout";
+
+      alert(
+        "Unable to log out. Please try again."
+      );
+
+      return;
+    }
+
+    window.location.href =
+      "index.html";
+  }
+);
+
+/* =========================================================
+   Navigation
+========================================================= */
+
+sellButton?.addEventListener(
+  "click",
+  () => {
+
+    window.location.href =
+      "sell.html";
+  }
+);
+
+myProductsButton?.addEventListener(
+  "click",
+  () => {
+
+    /*
+     * We'll build my-products.html
+     * in the next backend stage.
+     */
+
+    window.location.href =
+      "my-products.html";
+  }
+);
+
+/* =========================================================
+   Auth State Listener
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+  (event, session) => {
+
+    if (
+      event === "SIGNED_OUT" ||
+      !session
+    ) {
+
+      window.location.href =
+        "login.html";
+    }
+  }
+);
+
+/* =========================================================
+   Start
+========================================================= */
+
+initializeAccount();
